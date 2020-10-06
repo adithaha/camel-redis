@@ -26,7 +26,7 @@ public class MySpringBootRouter extends RouteBuilder {
 		    .to("spring-redis://{{redis.host}}")
 		    .log("${body}");
         
-        from("spring-redis://localhost:6379?command=SUBSCRIBE")
+        from("spring-redis://localhost:6379?command=SUBSCRIBE&channels=testChannel")
         	.log("${body}");
             
     }
