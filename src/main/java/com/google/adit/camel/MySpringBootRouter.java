@@ -18,16 +18,12 @@ public class MySpringBootRouter extends RouteBuilder {
 	        .get("/{key}").to("direct:get")
 	        .get("/{key}/{value}").to("direct:set");
     	
-    	from("timer:hello?period={{timer.period}}").routeId("hello").autoStartup(false)
-            .transform().method("myBean", "saySomething")
+    	from("timer:hello?period={{timer.period}}").routeId("hello")
             .log("key-${exchangeProperty.CamelTimerFiredTime.getTime}")
-            .setHeader(RedisConstants.COMMAND).simple("SET")
-            .setHeader(RedisConstants.KEY).simple("key-${exchangeProperty.CamelTimerFiredTime.getTime}")
-            .setHeader(RedisConstants.VALUE).simple("value-${exchangeProperty.CamelTimerFiredTime.getTime}")
-            .to("spring-redis://{{redis.host}}")
-		    .setHeader(RedisConstants.COMMAND).simple("GET")
-		    .setHeader(RedisConstants.KEY).simple("key-${exchangeProperty.CamelTimerFiredTime.getTime}")
-		    .to("spring-redis://{{redis.host}}")
+            .setHeader("key").simple("key-${exchangeProperty.CamelTimerFiredTime.getTime}")
+		    .setHeader("value").simple("value-${exchangeProperty.CamelTimerFiredTime.getTime}")
+            .to("direct:set")
+            .to("direct:get")
 		    .log("${body}");
     	
     	from("direct:get")
