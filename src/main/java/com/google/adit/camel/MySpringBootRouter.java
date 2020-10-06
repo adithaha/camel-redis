@@ -29,13 +29,13 @@ public class MySpringBootRouter extends RouteBuilder {
     	from("direct:get")
 	    	.setHeader(RedisConstants.COMMAND).simple("GET")
 		    .setHeader(RedisConstants.KEY).simple("${header.key}")
-		    .to("spring-redis://{{redis.host}}");
+		    .to("spring-redis://{{redis.host}}?serializer=StringRedisSerializer");
     	
     	from("direct:set")
 	    	.setHeader(RedisConstants.COMMAND).simple("SET")
 		    .setHeader(RedisConstants.KEY).simple("${header.key}")
 		    .setHeader(RedisConstants.VALUE).simple("${header.value}")
-            .to("spring-redis://{{redis.host}}");
+            .to("spring-redis://{{redis.host}}?serializer=StringRedisSerializer");
 	
         
 //        from("spring-redis://localhost:6379?command=SUBSCRIBE&channels=testChannel")
