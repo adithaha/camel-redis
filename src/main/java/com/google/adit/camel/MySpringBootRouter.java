@@ -25,6 +25,9 @@ public class MySpringBootRouter extends RouteBuilder {
 		    .setHeader(RedisConstants.KEY).simple("key-${exchangeProperty.CamelTimerFiredTime.getTime}")
 		    .to("spring-redis://{{redis.host}}")
 		    .log("${body}");
+        
+        from("spring-redis://localhost:6379?command=SUBSCRIBE")
+        	.log("${body}");
             
     }
 
