@@ -16,11 +16,10 @@ public class MySpringBootRouter extends RouteBuilder {
     public void configure() {
         from("timer:hello?period={{timer.period}}").routeId("hello")
             .transform().method("myBean", "saySomething")
-            .to("log:foo")
-            .log("key-${exchangeProperty.CamelTimerFiredTime}")
+            .log("key-${exchangeProperty.CamelTimerFiredTime.getTime}")
             .setHeader(RedisConstants.COMMAND).simple("SET")
-            .setHeader(RedisConstants.KEY).simple("key-${exchangeProperty.CamelTimerFiredTime}")
-            .setHeader(RedisConstants.VALUE).simple("value-${exchangeProperty.CamelTimerFiredTime}")
+            .setHeader(RedisConstants.KEY).simple("key-${exchangeProperty.CamelTimerFiredTime.getTime}")
+            .setHeader(RedisConstants.VALUE).simple("value-${exchangeProperty.CamelTimerFiredTime.getTime}")
             .to("spring-redis://{{redis.host}}");
        
     }
