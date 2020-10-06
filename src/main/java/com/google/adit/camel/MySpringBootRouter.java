@@ -14,7 +14,11 @@ public class MySpringBootRouter extends RouteBuilder {
 
     @Override
     public void configure() {
-        from("timer:hello?period={{timer.period}}").routeId("hello")
+    	rest("/redis/")
+	        .get("/{key}").to("direct:get")
+	        .get("/{key}/{value}").to("direct:set");
+    	
+    	from("timer:hello?period={{timer.period}}").routeId("hello").autoStartup(false)
             .transform().method("myBean", "saySomething")
             .log("key-${exchangeProperty.CamelTimerFiredTime.getTime}")
             .setHeader(RedisConstants.COMMAND).simple("SET")
@@ -25,9 +29,21 @@ public class MySpringBootRouter extends RouteBuilder {
 		    .setHeader(RedisConstants.KEY).simple("key-${exchangeProperty.CamelTimerFiredTime.getTime}")
 		    .to("spring-redis://{{redis.host}}")
 		    .log("${body}");
+    	
+    	from("direct:get")
+	    	.setHeader(RedisConstants.COMMAND).simple("GET")
+		    .setHeader(RedisConstants.KEY).simple("${header.key}")
+		    .to("spring-redis://{{redis.host}}");
+    	
+    	from("direct:set")
+	    	.setHeader(RedisConstants.COMMAND).simple("SET")
+		    .setHeader(RedisConstants.KEY).simple("${header.key}")
+		    .setHeader(RedisConstants.VALUE).simple("${header.value}")
+            .to("spring-redis://{{redis.host}}");
+	
         
-        from("spring-redis://localhost:6379?command=SUBSCRIBE&channels=testChannel")
-        	.log("${body}");
+//        from("spring-redis://localhost:6379?command=SUBSCRIBE&channels=testChannel")
+//        	.log("${body}");
             
     }
 
