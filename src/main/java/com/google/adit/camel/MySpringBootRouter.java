@@ -35,6 +35,7 @@ public class MySpringBootRouter extends RouteBuilder {
     		.setProperty("key").simple("${header.key}")
     		.setProperty("value").simple("${header.value}")
     		.loop(simple("${header.loop}"))
+    			.delay(1)
     			.setProperty("timestamp").simple("${date:now:yyyyMMddHHmmssSSS}")
     			.setHeader("key").simple("${exchangeProperty.key}-${exchangeProperty.timestamp}")
     			.setHeader("value").simple("${exchangeProperty.value}-${exchangeProperty.timestamp}")
